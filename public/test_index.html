@@ -5,10 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 
-    <title>Pediatric Antimicrobial CDS Launcher</title>
+    <title>Infobutton Example</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
     <!-- the custom syle sheet -->
     <link rel="stylesheet" href="css/custom-561f2d803c393d7a7f0a724474e1a001.css" integrity="sha256-Ce0XuFEmq0qiUJ1p/DV8C+6lxG9nsE0uCKRGSFiWD0g= sha512-iHAj2xJMLSF+tYaWD3lCp1cxctbC9fH4bpWE2oZX8gffRFpC8bBhF+9Hl68A/Ekd6cLmEcCZFPb85DqvL986gw==" >
@@ -17,21 +20,27 @@
 
     <div class="container">
       <div class="row">
-        <h4>Loading... Page will redirect shortly</h4>
+        <h4 id="patientName"></h4>
+        <div>
+          <table id="observation_list">
+            <tr><th>Date</th><th>Height</th> </tr>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- load various javacript libraries last -->
 
+    <!-- Latest compiled and minified JavaScript external libraries-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="external/underscore_1_8_3/underscore-min.js"></script>
+    <script src="external/backbone_1_2_3/backbone-min.js"></script>
+
     <!-- The FHIR JavaScript client -->
     <script src="https://sandbox.hspconsortium.org/dstu2/fhir-client/fhir-client.js"></script>
 
     <!-- our custom JavaScript -->
-    <script>
-      FHIR.oauth2.authorize({
-        "client_id": "my_web_app",
-        "scope":  "patient/*.read"
-      });
-    </script>
+    <script src="js/custom-3954e192f6abdf1a87b78f76c1cf35e5.js" integrity="sha256-ed+037WCYa2FUsRfzHHQ1MGPtn/ARyCT9KQGZmoTKuk= sha512-0Af4spX2lY+Bdr8P4JcM+xDwVaDMLnJVd1NiCopq+tsYEIeZUaeHi0+gEYVt1Tg3KZgtsr3kSQTuJCX+IcAEbQ==" ></script>
   </body>
 </html>
