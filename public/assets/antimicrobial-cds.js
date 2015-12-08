@@ -115,9 +115,10 @@ define('antimicrobial-cds/components/aom-modal', ['exports', 'ember', 'moment', 
       step4: function step4(med_form) {
         this.set('med_form', med_form);
         _ember['default'].$('#aom_step5').removeClass('hidden');
-        _ember['default'].$('#aom_criteria_not_met').addClass('hidden');
+        if (!this.isOverride) {
+          _ember['default'].$('#aom_criteria_not_met').addClass('hidden');
+        }
         _ember['default'].$('#aom_review').removeClass('hidden');
-        this.hide_override();
         this.uncheck_steps(4);
       },
       step5: function step5(med) {
@@ -137,9 +138,10 @@ define('antimicrobial-cds/components/aom-modal', ['exports', 'ember', 'moment', 
       },
       forcemedication: function forcemedication() {
         if (!_ember['default'].isEmpty(_ember['default'].$('#aom_override').val())) {
-          _ember['default'].$('#aom_step5').removeClass('hidden');
+          _ember['default'].$('#aom_step4').removeClass('hidden');
           this.set('isOverride', true);
         } else {
+          _ember['default'].$('#aom_step4').addClass('hidden');
           _ember['default'].$('#aom_step5').addClass('hidden');
           this.set('isOverride', false);
         }
@@ -490,7 +492,9 @@ define('antimicrobial-cds/components/strep-modal', ['exports', 'ember', 'moment'
       step4: function step4(med_form) {
         this.set('med_form', med_form);
         _ember['default'].$('#strep_step5').removeClass('hidden');
-        _ember['default'].$('#strep_criteria_not_met').addClass('hidden');
+        if (!this.isOverride) {
+          _ember['default'].$('#strep_criteria_not_met').addClass('hidden');
+        }
         _ember['default'].$('#strep_override').addClass('hidden');
         this.uncheck_steps(4);
       },
@@ -512,9 +516,10 @@ define('antimicrobial-cds/components/strep-modal', ['exports', 'ember', 'moment'
       forcemedication: function forcemedication() {
         if (!_ember['default'].isEmpty(_ember['default'].$('#strep_override').val())) {
           console.log('override value provided, need to show medication options');
-          _ember['default'].$('#strep_step5').removeClass('hidden');
+          _ember['default'].$('#strep_step4').removeClass('hidden');
           this.set('isOverride', true);
         } else {
+          _ember['default'].$('#strep_step4').addClass('hidden');
           _ember['default'].$('#strep_step5').addClass('hidden');
           this.set('isOverride', false);
         }
@@ -582,11 +587,11 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
 
       // Clindamycin calculation
       if (this.fc.patient.weight.unit === 'kg') {
-        dose = this.fc.patient.weight.value * 7 / 3;
-        if (dose > 300) {
+        dose = this.fc.patient.weight.value * 7;
+        if (dose * 3 > 900) {
           this.set('clindamycin_dose', 300);
         } else {
-          this.set('clindamycin_dose', 150.0 * Math.round(dose / 150.0));
+          this.set('clindamycin_dose', 50.0 * Math.round(dose / 50.0));
         }
       }
       this.set('clindamycin_frequency', '3 times daily');
@@ -594,7 +599,6 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
     },
     actions: {
       step5: function step5(med) {
-        console.log("68 - strep-non-penicillin step5 action. med: ", med);
         if (!_ember['default'].isNone(med)) {
           var display = med[0].toUpperCase() + med.slice(1) + ' ' + this.get(med + '_dose') + this.get('unit');
           this.get('medication_callback')({
@@ -620,7 +624,8 @@ define('antimicrobial-cds/components/strep-penicillin', ['exports', 'ember', 'an
     penicillin_duration: '10 days',
     benzathine_dose: 0,
     benzathine_unit: 'IU IM',
-    benzathine_duration: 'x 1 dose',
+    benzathine_duration_value: 'x 1',
+    benzathine_duration_unit: 'dose',
     suspension_dose: 0,
     suspension_unit: 'mg',
     form: null,
@@ -697,8 +702,8 @@ define('antimicrobial-cds/components/strep-penicillin', ['exports', 'ember', 'an
               code: 'code',
               dosageInstruction: '1 dose',
               date: moment().format(_antimicrobialCdsConfigEnvironment['default'].APP.date_format),
-              duration_value: '',
-              duration_unit: '',
+              duration_value: this.get('benzathine_duration_value'),
+              duration_unit: this.get('benzathine_duration_unit'),
               refills: 1
             });
           }
@@ -976,7 +981,7 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
         self.set('fhirFailed', true);
         self.set('isLoading', false);
         self.loadPatient('demo');
-      }, 2000);
+      }, 5000);
 
       // this line prevents the addition of a timestamp to the fhir-client.js file
       _ember['default'].$.ajaxSetup({ cache: true });
@@ -4776,6 +4781,10 @@ define("antimicrobial-cds/templates/components/strep-penicillin", ["exports"], f
           dom.appendChild(el3, el4);
           var el4 = dom.createComment("");
           dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode(" ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createComment("");
+          dom.appendChild(el3, el4);
           dom.appendChild(el2, el3);
           var el3 = dom.createTextNode("\n    ");
           dom.appendChild(el2, el3);
@@ -4794,7 +4803,7 @@ define("antimicrobial-cds/templates/components/strep-penicillin", ["exports"], f
           var element3 = dom.childAt(fragment, [3, 1]);
           var element4 = dom.childAt(element3, [1]);
           var element5 = dom.childAt(element3, [3]);
-          var morphs = new Array(8);
+          var morphs = new Array(9);
           morphs[0] = dom.createElementMorph(element1);
           morphs[1] = dom.createMorphAt(element2, 1, 1);
           morphs[2] = dom.createMorphAt(element2, 2, 2);
@@ -4803,9 +4812,10 @@ define("antimicrobial-cds/templates/components/strep-penicillin", ["exports"], f
           morphs[5] = dom.createMorphAt(element5, 1, 1);
           morphs[6] = dom.createMorphAt(element5, 2, 2);
           morphs[7] = dom.createMorphAt(element5, 4, 4);
+          morphs[8] = dom.createMorphAt(element5, 6, 6);
           return morphs;
         },
-        statements: [["element", "action", ["step5", "Penicillin VK"], ["on", "change"], ["loc", [null, [11, 113], [11, 159]]]], ["content", "penicillin_dose", ["loc", [null, [12, 27], [12, 46]]]], ["content", "penicillin_unit", ["loc", [null, [12, 46], [12, 65]]]], ["content", "penicillin_duration", ["loc", [null, [12, 76], [12, 99]]]], ["element", "action", ["step5", "Benzathine penicillin"], ["on", "change"], ["loc", [null, [17, 113], [17, 167]]]], ["content", "benzathine_dose", ["loc", [null, [18, 35], [18, 54]]]], ["content", "benzathine_unit", ["loc", [null, [18, 54], [18, 73]]]], ["content", "benzathine_duration", ["loc", [null, [18, 74], [18, 97]]]]],
+        statements: [["element", "action", ["step5", "Penicillin VK"], ["on", "change"], ["loc", [null, [11, 113], [11, 159]]]], ["content", "penicillin_dose", ["loc", [null, [12, 27], [12, 46]]]], ["content", "penicillin_unit", ["loc", [null, [12, 46], [12, 65]]]], ["content", "penicillin_duration", ["loc", [null, [12, 76], [12, 99]]]], ["element", "action", ["step5", "Benzathine penicillin"], ["on", "change"], ["loc", [null, [17, 113], [17, 167]]]], ["content", "benzathine_dose", ["loc", [null, [18, 35], [18, 54]]]], ["content", "benzathine_unit", ["loc", [null, [18, 54], [18, 73]]]], ["content", "benzathine_duration_value", ["loc", [null, [18, 74], [18, 103]]]], ["content", "benzathine_duration_unit", ["loc", [null, [18, 104], [18, 132]]]]],
         locals: [],
         templates: []
       };
@@ -5830,11 +5840,11 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 100,
+              "line": 97,
               "column": 8
             },
             "end": {
-              "line": 102,
+              "line": 99,
               "column": 8
             }
           },
@@ -5859,7 +5869,7 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["content", "fc.patient.medications.length", ["loc", [null, [101, 27], [101, 60]]]]],
+        statements: [["content", "fc.patient.medications.length", ["loc", [null, [98, 27], [98, 60]]]]],
         locals: [],
         templates: []
       };
@@ -5872,11 +5882,11 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 102,
+              "line": 99,
               "column": 8
             },
             "end": {
-              "line": 104,
+              "line": 101,
               "column": 8
             }
           },
@@ -5906,6 +5916,98 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         templates: []
       };
     })();
+    var child2 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 141,
+              "column": 6
+            },
+            "end": {
+              "line": 145,
+              "column": 6
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/patient.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "row bg-infolight-b");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("strong");
+          var el3 = dom.createTextNode("Penicillin");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child3 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 145,
+              "column": 6
+            },
+            "end": {
+              "line": 149,
+              "column": 6
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/patient.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "row info");
+          var el2 = dom.createTextNode("\n        No relevant allergies\n      ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
     return {
       meta: {
         "fragmentReason": {
@@ -5920,7 +6022,7 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 154,
+            "line": 155,
             "column": 0
           }
         },
@@ -6141,34 +6243,7 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("p");
-        var el5 = dom.createTextNode("Followup for pneumonia.");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("p");
-        dom.setAttribute(el4, "class", "lead");
-        var el5 = dom.createTextNode("Recent Patient Notes");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("p");
-        var el5 = dom.createElement("strong");
-        var el6 = dom.createTextNode("Sept 1, 2015");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode(" - Pat was admitted to Local Area Regional Hospital due to severe bacterial pneumonia. Due to complications with pneumonia and health conditions...");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("p");
-        var el5 = dom.createElement("strong");
-        var el6 = dom.createTextNode("Aug 1, 2015");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode(" - Pat visited due to increasingly severe migraines. Prescribed additional medication to help alleviate pain");
+        var el5 = dom.createTextNode("Unknown");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n    ");
@@ -6517,20 +6592,11 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var el5 = dom.createTextNode("Allergies");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row bg-infolight-b");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("strong");
-        var el6 = dom.createTextNode("Penicillin");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode(" Severe; anaphylactic reaction\n      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n    ");
+        var el4 = dom.createTextNode("    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -6555,8 +6621,9 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var element4 = dom.childAt(element2, [7]);
         var element5 = dom.childAt(element2, [11]);
         var element6 = dom.childAt(element2, [15]);
-        var element7 = dom.childAt(fragment, [2, 1, 7]);
-        var morphs = new Array(24);
+        var element7 = dom.childAt(fragment, [2]);
+        var element8 = dom.childAt(element7, [1, 7]);
+        var morphs = new Array(25);
         morphs[0] = dom.createMorphAt(dom.childAt(element1, [3]), 0, 0);
         morphs[1] = dom.createMorphAt(dom.childAt(element1, [7]), 0, 0);
         morphs[2] = dom.createMorphAt(dom.childAt(element1, [11]), 0, 0);
@@ -6573,19 +6640,20 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         morphs[13] = dom.createMorphAt(element6, 0, 0);
         morphs[14] = dom.createMorphAt(element6, 2, 2);
         morphs[15] = dom.createMorphAt(dom.childAt(element6, [4]), 0, 0);
-        morphs[16] = dom.createMorphAt(element7, 3, 3);
-        morphs[17] = dom.createMorphAt(element7, 5, 5);
-        morphs[18] = dom.createMorphAt(element7, 7, 7);
-        morphs[19] = dom.createMorphAt(element7, 9, 9);
-        morphs[20] = dom.createMorphAt(element7, 11, 11);
-        morphs[21] = dom.createMorphAt(dom.childAt(element7, [13]), 1, 1);
-        morphs[22] = dom.createMorphAt(dom.childAt(element7, [15]), 3, 3);
-        morphs[23] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[16] = dom.createMorphAt(element8, 3, 3);
+        morphs[17] = dom.createMorphAt(element8, 5, 5);
+        morphs[18] = dom.createMorphAt(element8, 7, 7);
+        morphs[19] = dom.createMorphAt(element8, 9, 9);
+        morphs[20] = dom.createMorphAt(element8, 11, 11);
+        morphs[21] = dom.createMorphAt(dom.childAt(element8, [13]), 1, 1);
+        morphs[22] = dom.createMorphAt(dom.childAt(element8, [15]), 3, 3);
+        morphs[23] = dom.createMorphAt(dom.childAt(element7, [3, 7]), 3, 3);
+        morphs[24] = dom.createMorphAt(fragment, 4, 4, contextualElement);
         return morphs;
       },
-      statements: [["content", "fc.patient.formatted_name", ["loc", [null, [8, 12], [8, 41]]]], ["content", "fc.patient.birthDate", ["loc", [null, [11, 12], [11, 36]]]], ["content", "fc.patient.gender", ["loc", [null, [13, 12], [13, 33]]]], ["content", "fc.patient.formatted_address", ["loc", [null, [15, 12], [15, 44]]]], ["inline", "round", [["get", "fc.patient.weight.value", ["loc", [null, [22, 20], [22, 43]]]]], [], ["loc", [null, [22, 12], [22, 45]]]], ["content", "fc.patient.weight.unit", ["loc", [null, [22, 46], [22, 72]]]], ["content", "fc.patient.weight.date", ["loc", [null, [22, 99], [22, 125]]]], ["inline", "round", [["get", "fc.patient.temp.value", ["loc", [null, [24, 20], [24, 41]]]]], [], ["loc", [null, [24, 12], [24, 43]]]], ["content", "fc.patient.temp.unit", ["loc", [null, [24, 44], [24, 68]]]], ["content", "fc.patient.temp.date", ["loc", [null, [24, 95], [24, 119]]]], ["content", "fc.patient.bloodpressure.systolic.value", ["loc", [null, [26, 12], [26, 55]]]], ["content", "fc.patient.bloodpressure.systolic.unit", ["loc", [null, [26, 56], [26, 98]]]], ["content", "fc.patient.bloodpressure.systolic.date", ["loc", [null, [27, 36], [27, 78]]]], ["content", "fc.patient.bloodpressure.diastolic.value", ["loc", [null, [29, 12], [29, 56]]]], ["content", "fc.patient.bloodpressure.diastolic.unit", ["loc", [null, [29, 57], [29, 100]]]], ["content", "fc.patient.bloodpressure.diastolic.date", ["loc", [null, [30, 36], [30, 79]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [94, 29], [94, 51]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-b"], ["loc", [null, [94, 6], [94, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [95, 29], [95, 51]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-a"], ["loc", [null, [95, 6], [95, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [96, 29], [96, 51]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-b"], ["loc", [null, [96, 6], [96, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [97, 29], [97, 51]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-a"], ["loc", [null, [97, 6], [97, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [98, 29], [98, 51]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-b"], ["loc", [null, [98, 6], [98, 94]]]], ["block", "if", [["get", "fc.patient.medications", ["loc", [null, [100, 14], [100, 36]]]]], [], 0, 1, ["loc", [null, [100, 8], [104, 15]]]], ["inline", "link-to", ["Medications", "medicationorders"], ["class", "btn btn-default pull-right"], ["loc", [null, [108, 8], [108, 87]]]], ["content", "outlet", ["loc", [null, [153, 0], [153, 10]]]]],
+      statements: [["content", "fc.patient.formatted_name", ["loc", [null, [8, 12], [8, 41]]]], ["content", "fc.patient.birthDate", ["loc", [null, [11, 12], [11, 36]]]], ["content", "fc.patient.gender", ["loc", [null, [13, 12], [13, 33]]]], ["content", "fc.patient.formatted_address", ["loc", [null, [15, 12], [15, 44]]]], ["inline", "round", [["get", "fc.patient.weight.value", ["loc", [null, [22, 20], [22, 43]]]]], [], ["loc", [null, [22, 12], [22, 45]]]], ["content", "fc.patient.weight.unit", ["loc", [null, [22, 46], [22, 72]]]], ["content", "fc.patient.weight.date", ["loc", [null, [22, 99], [22, 125]]]], ["inline", "round", [["get", "fc.patient.temp.value", ["loc", [null, [24, 20], [24, 41]]]]], [], ["loc", [null, [24, 12], [24, 43]]]], ["content", "fc.patient.temp.unit", ["loc", [null, [24, 44], [24, 68]]]], ["content", "fc.patient.temp.date", ["loc", [null, [24, 95], [24, 119]]]], ["content", "fc.patient.bloodpressure.systolic.value", ["loc", [null, [26, 12], [26, 55]]]], ["content", "fc.patient.bloodpressure.systolic.unit", ["loc", [null, [26, 56], [26, 98]]]], ["content", "fc.patient.bloodpressure.systolic.date", ["loc", [null, [27, 36], [27, 78]]]], ["content", "fc.patient.bloodpressure.diastolic.value", ["loc", [null, [29, 12], [29, 56]]]], ["content", "fc.patient.bloodpressure.diastolic.unit", ["loc", [null, [29, 57], [29, 100]]]], ["content", "fc.patient.bloodpressure.diastolic.date", ["loc", [null, [30, 36], [30, 79]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [91, 29], [91, 51]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-b"], ["loc", [null, [91, 6], [91, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [92, 29], [92, 51]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-a"], ["loc", [null, [92, 6], [92, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [93, 29], [93, 51]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-b"], ["loc", [null, [93, 6], [93, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [94, 29], [94, 51]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-a"], ["loc", [null, [94, 6], [94, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [95, 29], [95, 51]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-b"], ["loc", [null, [95, 6], [95, 94]]]], ["block", "if", [["get", "fc.patient.medications", ["loc", [null, [97, 14], [97, 36]]]]], [], 0, 1, ["loc", [null, [97, 8], [101, 15]]]], ["inline", "link-to", ["Medications", "medicationorders"], ["class", "btn btn-default pull-right"], ["loc", [null, [105, 8], [105, 87]]]], ["block", "if", [["get", "fc.patient.hasPenicillinAllergy", ["loc", [null, [141, 12], [141, 43]]]]], [], 2, 3, ["loc", [null, [141, 6], [149, 13]]]], ["content", "outlet", ["loc", [null, [154, 0], [154, 10]]]]],
       locals: [],
-      templates: [child0, child1]
+      templates: [child0, child1, child2, child3]
     };
   })());
 });
@@ -6615,7 +6683,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+a459fc40"});
+  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+4606bead"});
 }
 
 /* jshint ignore:end */

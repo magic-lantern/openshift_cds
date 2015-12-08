@@ -59,7 +59,7 @@ define('antimicrobial-cds/tests/components/strep-non-penicillin.jshint', ['expor
 
   QUnit.module('JSHint - components');
   QUnit.test('components/strep-non-penicillin.js should pass jshint', function (assert) {
-    assert.ok(false, 'components/strep-non-penicillin.js should pass jshint.\ncomponents/strep-non-penicillin.js: line 75, col 17, \'moment\' is not defined.\n\n1 error');
+    assert.ok(false, 'components/strep-non-penicillin.js should pass jshint.\ncomponents/strep-non-penicillin.js: line 74, col 17, \'moment\' is not defined.\n\n1 error');
   });
 });
 define('antimicrobial-cds/tests/components/strep-penicillin.jshint', ['exports'], function (exports) {
@@ -67,7 +67,7 @@ define('antimicrobial-cds/tests/components/strep-penicillin.jshint', ['exports']
 
   QUnit.module('JSHint - components');
   QUnit.test('components/strep-penicillin.js should pass jshint', function (assert) {
-    assert.ok(false, 'components/strep-penicillin.js should pass jshint.\ncomponents/strep-penicillin.js: line 21, col 16, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 69, col 19, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 80, col 19, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 91, col 19, \'moment\' is not defined.\n\n4 errors');
+    assert.ok(false, 'components/strep-penicillin.js should pass jshint.\ncomponents/strep-penicillin.js: line 22, col 16, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 70, col 19, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 81, col 19, \'moment\' is not defined.\ncomponents/strep-penicillin.js: line 92, col 19, \'moment\' is not defined.\n\n4 errors');
   });
 });
 define('antimicrobial-cds/tests/controllers/conditions.jshint', ['exports'], function (exports) {
