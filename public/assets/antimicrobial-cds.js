@@ -2822,6 +2822,10 @@ define("antimicrobial-cds/templates/components/aom-non-penicillin", ["exports"],
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode(" ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
@@ -2861,6 +2865,10 @@ define("antimicrobial-cds/templates/components/aom-non-penicillin", ["exports"],
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode(" ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
@@ -2897,6 +2905,10 @@ define("antimicrobial-cds/templates/components/aom-non-penicillin", ["exports"],
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode(" b.i.d. for ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode(" ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
@@ -2950,27 +2962,30 @@ define("antimicrobial-cds/templates/components/aom-non-penicillin", ["exports"],
         var element7 = dom.childAt(element6, [1]);
         var element8 = dom.childAt(element6, [3]);
         var element9 = dom.childAt(fragment, [6, 1, 1]);
-        var morphs = new Array(17);
+        var morphs = new Array(20);
         morphs[0] = dom.createElementMorph(element1);
         morphs[1] = dom.createMorphAt(element2, 1, 1);
         morphs[2] = dom.createMorphAt(element2, 3, 3);
         morphs[3] = dom.createMorphAt(element2, 4, 4);
         morphs[4] = dom.createMorphAt(element2, 6, 6);
-        morphs[5] = dom.createElementMorph(element4);
-        morphs[6] = dom.createMorphAt(element5, 1, 1);
-        morphs[7] = dom.createMorphAt(element5, 3, 3);
-        morphs[8] = dom.createMorphAt(element5, 4, 4);
-        morphs[9] = dom.createMorphAt(element5, 6, 6);
-        morphs[10] = dom.createElementMorph(element7);
-        morphs[11] = dom.createMorphAt(element8, 1, 1);
-        morphs[12] = dom.createMorphAt(element8, 3, 3);
-        morphs[13] = dom.createMorphAt(element8, 4, 4);
-        morphs[14] = dom.createMorphAt(element8, 6, 6);
-        morphs[15] = dom.createElementMorph(element9);
-        morphs[16] = dom.createMorphAt(fragment, 8, 8, contextualElement);
+        morphs[5] = dom.createMorphAt(element2, 8, 8);
+        morphs[6] = dom.createElementMorph(element4);
+        morphs[7] = dom.createMorphAt(element5, 1, 1);
+        morphs[8] = dom.createMorphAt(element5, 3, 3);
+        morphs[9] = dom.createMorphAt(element5, 4, 4);
+        morphs[10] = dom.createMorphAt(element5, 6, 6);
+        morphs[11] = dom.createMorphAt(element5, 8, 8);
+        morphs[12] = dom.createElementMorph(element7);
+        morphs[13] = dom.createMorphAt(element8, 1, 1);
+        morphs[14] = dom.createMorphAt(element8, 3, 3);
+        morphs[15] = dom.createMorphAt(element8, 4, 4);
+        morphs[16] = dom.createMorphAt(element8, 6, 6);
+        morphs[17] = dom.createMorphAt(element8, 8, 8);
+        morphs[18] = dom.createElementMorph(element9);
+        morphs[19] = dom.createMorphAt(fragment, 8, 8, contextualElement);
         return morphs;
       },
-      statements: [["element", "action", ["step5", "cefdinir"], ["on", "change"], ["loc", [null, [3, 99], [3, 140]]]], ["content", "type", ["loc", [null, [4, 18], [4, 26]]]], ["content", "cefdinir_dose", ["loc", [null, [4, 28], [4, 45]]]], ["content", "unit", ["loc", [null, [4, 45], [4, 53]]]], ["content", "duration", ["loc", [null, [4, 65], [4, 77]]]], ["element", "action", ["step5", "cefuroxime"], ["on", "change"], ["loc", [null, [9, 99], [9, 142]]]], ["content", "type", ["loc", [null, [10, 41], [10, 49]]]], ["content", "cefuroxime_dose", ["loc", [null, [10, 51], [10, 70]]]], ["content", "unit", ["loc", [null, [10, 70], [10, 78]]]], ["content", "duration", ["loc", [null, [10, 90], [10, 102]]]], ["element", "action", ["step5", "cefpodoxime"], ["on", "change"], ["loc", [null, [15, 99], [15, 143]]]], ["content", "type", ["loc", [null, [16, 42], [16, 50]]]], ["content", "cefpodoxime_dose", ["loc", [null, [16, 52], [16, 72]]]], ["content", "unit", ["loc", [null, [16, 72], [16, 80]]]], ["content", "duration", ["loc", [null, [16, 92], [16, 104]]]], ["element", "action", ["step5"], ["on", "change"], ["loc", [null, [21, 99], [21, 129]]]], ["content", "yield", ["loc", [null, [26, 0], [26, 9]]]]],
+      statements: [["element", "action", ["step5", "cefdinir"], ["on", "change"], ["loc", [null, [3, 99], [3, 140]]]], ["content", "type", ["loc", [null, [4, 18], [4, 26]]]], ["content", "cefdinir_dose", ["loc", [null, [4, 28], [4, 45]]]], ["content", "unit", ["loc", [null, [4, 45], [4, 53]]]], ["content", "duration_value", ["loc", [null, [4, 65], [4, 83]]]], ["content", "duration_unit", ["loc", [null, [4, 84], [4, 101]]]], ["element", "action", ["step5", "cefuroxime"], ["on", "change"], ["loc", [null, [9, 99], [9, 142]]]], ["content", "type", ["loc", [null, [10, 41], [10, 49]]]], ["content", "cefuroxime_dose", ["loc", [null, [10, 51], [10, 70]]]], ["content", "unit", ["loc", [null, [10, 70], [10, 78]]]], ["content", "duration_value", ["loc", [null, [10, 90], [10, 108]]]], ["content", "duration_unit", ["loc", [null, [10, 109], [10, 126]]]], ["element", "action", ["step5", "cefpodoxime"], ["on", "change"], ["loc", [null, [15, 99], [15, 143]]]], ["content", "type", ["loc", [null, [16, 42], [16, 50]]]], ["content", "cefpodoxime_dose", ["loc", [null, [16, 52], [16, 72]]]], ["content", "unit", ["loc", [null, [16, 72], [16, 80]]]], ["content", "duration_value", ["loc", [null, [16, 92], [16, 110]]]], ["content", "duration_unit", ["loc", [null, [16, 111], [16, 128]]]], ["element", "action", ["step5"], ["on", "change"], ["loc", [null, [21, 99], [21, 129]]]], ["content", "yield", ["loc", [null, [26, 0], [26, 9]]]]],
       locals: [],
       templates: []
     };
@@ -6683,7 +6698,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+4606bead"});
+  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+0e072679"});
 }
 
 /* jshint ignore:end */
