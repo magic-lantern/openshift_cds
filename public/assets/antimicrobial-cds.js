@@ -19,6 +19,30 @@ define('antimicrobial-cds/app', ['exports', 'ember', 'ember/resolver', 'ember/lo
 
   exports['default'] = App;
 });
+define('antimicrobial-cds/components/allergy-list', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Component.extend({
+    highlight_color: null,
+    allergies: null,
+    index: 0,
+    severity: null,
+    manifestation: null,
+    category: null,
+    date: null,
+    substance: null,
+    text: null,
+    shouldShow: false,
+    init: function init() {
+      this._super.apply(this, arguments);
+      if (!_ember['default'].isEmpty(this.allergies) && !_ember['default'].isEmpty(this.allergies[this.index])) {
+        for (var i in this.allergies[this.index]) {
+          this.set(i, this.allergies[this.index][i]);
+        }
+        this.set('substance', this.substance.capitalize());
+        this.set('shouldShow', true);
+      }
+    }
+  });
+});
 define('antimicrobial-cds/components/aom-modal', ['exports', 'ember', 'moment', 'antimicrobial-cds/config/environment'], function (exports, _ember, _moment, _antimicrobialCdsConfigEnvironment) {
   exports['default'] = _ember['default'].Component.extend({
     total_steps: 5,
@@ -187,7 +211,7 @@ define('antimicrobial-cds/components/aom-non-penicillin', ['exports', 'ember', '
       // Cefdinir calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 14 / 2;
-        if (dose > 300) {
+        if (dose >= 300) {
           this.set('cefdinir_dose', 300);
         } else {
           this.set('cefdinir_dose', 150.0 * Math.round(dose / 150.0));
@@ -197,7 +221,7 @@ define('antimicrobial-cds/components/aom-non-penicillin', ['exports', 'ember', '
       // Cefuroxime calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 30 / 2;
-        if (dose > 500) {
+        if (dose >= 500) {
           this.set('cefuroxime_dose', 500);
         } else {
           this.set('cefuroxime_dose', 125.0 * Math.round(dose / 125.0));
@@ -207,7 +231,7 @@ define('antimicrobial-cds/components/aom-non-penicillin', ['exports', 'ember', '
       // Cefpodoxime calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 10 / 2;
-        if (dose > 200) {
+        if (dose >= 200) {
           this.set('cefpodoxime_dose', 200);
         } else {
           this.set('cefpodoxime_dose', 50.0 * Math.round(dose / 50.0));
@@ -284,7 +308,7 @@ define('antimicrobial-cds/components/aom-penicillin', ['exports', 'ember', 'anti
     calculate_dose: function calculate_dose() {
       if (this.fc.patient.weight.unit === 'kg') {
         var dose = this.fc.patient.weight.value * 85 / 2;
-        if (dose > 2000) {
+        if (dose >= 2000) {
           this.set('dose', 2000);
         } else {
           this.set('dose', 125.0 * Math.round(dose / 125.0));
@@ -340,6 +364,23 @@ define('antimicrobial-cds/components/app-version', ['exports', 'ember-cli-app-ve
   exports['default'] = _emberCliAppVersionComponentsAppVersion['default'].extend({
     version: version,
     name: name
+  });
+});
+define('antimicrobial-cds/components/condition-list', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Component.extend({
+    highlight_color: null,
+    conditions: null,
+    index: 0,
+    shouldShow: false,
+    init: function init() {
+      this._super.apply(this, arguments);
+      if (!_ember['default'].isEmpty(this.conditions) && !_ember['default'].isEmpty(this.conditions[this.index])) {
+        for (var i in this.conditions[this.index]) {
+          this.set(i, this.conditions[this.index][i]);
+        }
+        this.set('shouldShow', true);
+      }
+    }
   });
 });
 define('antimicrobial-cds/components/fa-icon', ['exports', 'ember-cli-font-awesome/components/fa-icon'], function (exports, _emberCliFontAwesomeComponentsFaIcon) {
@@ -564,7 +605,7 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
       // Cephalexin calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 20 / 2;
-        if (dose > 500) {
+        if (dose >= 500) {
           this.set('cephalexin_dose', 500);
         } else {
           this.set('cephalexin_dose', 125.0 * Math.round(dose / 125.0));
@@ -576,7 +617,7 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
       // Azithromycin calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 12;
-        if (dose > 500) {
+        if (dose >= 500) {
           this.set('azithromycin_dose', 500);
         } else {
           this.set('azithromycin_dose', 125.0 * Math.round(dose / 125.0));
@@ -588,7 +629,7 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
       // Clindamycin calculation
       if (this.fc.patient.weight.unit === 'kg') {
         dose = this.fc.patient.weight.value * 7;
-        if (dose * 3 > 900) {
+        if (dose * 3 >= 900) {
           this.set('clindamycin_dose', 300);
         } else {
           this.set('clindamycin_dose', 50.0 * Math.round(dose / 50.0));
@@ -600,7 +641,7 @@ define('antimicrobial-cds/components/strep-non-penicillin', ['exports', 'ember',
     actions: {
       step5: function step5(med) {
         if (!_ember['default'].isNone(med)) {
-          var display = med[0].toUpperCase() + med.slice(1) + ' ' + this.get(med + '_dose') + this.get('unit');
+          var display = med.capitalize() + ' ' + this.get(med + '_dose') + this.get('unit');
           this.get('medication_callback')({
             display: display,
             code: 'code',
@@ -665,7 +706,7 @@ define('antimicrobial-cds/components/strep-penicillin', ['exports', 'ember', 'an
         var dose = this.fc.patient.weight.value * 50;
         console.log('this.fc.patient.weight.value :', this.fc.patient.weight.value);
         console.log('dose :', dose);
-        if (dose > 1000) {
+        if (dose >= 1000) {
           this.set('suspension_dose', 1000);
         } else {
           this.set('suspension_dose', this.set('dose', 125.0 * Math.round(dose / 125.0)));
@@ -944,6 +985,7 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
       },
       medications: [],
       allergies: [],
+      conditions: [],
       hasPenicillinAllergy: null
     },
     patientContext: null,
@@ -1011,7 +1053,8 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
                 self.readTemp();
                 self.readBP();
                 self.readMedications();
-                //self.getConditions();
+                self.readAllergies();
+                self.readConditions();
                 clearTimeout(timeout);
                 self.set('isLoading', false);
               });
@@ -1077,7 +1120,19 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
       var self = this;
       self.getMedications('', function (r) {
         self.set('patient.medications', r);
-        console.log("161: ", self.patient.medications);
+      });
+    },
+    readAllergies: function readAllergies() {
+      var self = this;
+      self.getAllergies('', function (r) {
+        self.set('patient.allergies', r);
+      });
+    },
+    readConditions: function readConditions() {
+      var self = this;
+      self.getConditions('', function (r) {
+        self.set('patient.conditions', r);
+        console.log('conditions: ', self.get('patient.conditions'));
       });
     },
     addMedication: function addMedication(input) {
@@ -1092,7 +1147,7 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
       this.patient.medications.unshiftObject(m);
     },
     getMedications: function getMedications(code, callback) {
-      var count = arguments.length <= 2 || arguments[2] === undefined ? 5 : arguments[2];
+      var count = arguments.length <= 2 || arguments[2] === undefined ? 20 : arguments[2];
 
       var ret = [];
       _ember['default'].$.when(this.patientContext.api.search({
@@ -1110,10 +1165,14 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
               r.display = m.medicationCodeableConcept.coding[0].display;
               r.code = m.medicationCodeableConcept.coding[0].code;
               r.dosageInstruction = m.dosageInstruction[0].text;
-              r.date = m.dosageInstruction[0].timing.repeat.boundsPeriod.start;
-              r.duration_value = m.dispenseRequest.expectedSupplyDuration.value;
-              r.duration_unit = m.dispenseRequest.expectedSupplyDuration.unit;
-              r.refills = m.dispenseRequest.numberOfRepeatsAllowed;
+              if (!_ember['default'].isNone(m.dosageInstruction[0].timing)) {
+                r.date = m.dosageInstruction[0].timing.repeat.boundsPeriod.start;
+              }
+              if (!_ember['default'].isNone(m.dispenseRequest)) {
+                r.duration_value = m.dispenseRequest.expectedSupplyDuration.value;
+                r.duration_unit = m.dispenseRequest.expectedSupplyDuration.unit;
+                r.refills = m.dispenseRequest.numberOfRepeatsAllowed;
+              }
               ret.push(r);
             } else {
               console.log("fhir-client - expected properties missing for medication ", med);
@@ -1125,15 +1184,60 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
         }
       });
     },
-    getConditions: function getConditions() {
-      var self = this;
-      console.log("this.patientContext : ", self.patientContext);
-      setTimeout(function () {
-        console.log("this.patientContext : ", self.patientContext);
-        self.patientContext.Condition.where.code('102594003').search().then(function (conds) {
-          console.log("Conditions: ", conds);
-        });
-      }, 3000);
+    getConditions: function getConditions(code, callback) {
+      var count = arguments.length <= 2 || arguments[2] === undefined ? 20 : arguments[2];
+
+      var ret = [];
+      _ember['default'].$.when(this.patientContext.api.search({
+        'type': "Condition",
+        // 'query': {
+        //   'code': code,
+        //   '_sort:desc':'onsetDateTime'},
+        'count': count })).done(function (conditions) {
+        console.log('conditions: ', conditions);
+        if (!_ember['default'].isNone(conditions.data.entry)) {
+          conditions.data.entry.forEach(function (condition) {
+            var c = condition.resource;
+            var r = {};
+            r.code = c.code.coding[0].code;
+            r.text = c.code.text;
+            r.date = c.onsetDateTime;
+            ret.push(r);
+          });
+        }
+        if (typeof callback === 'function') {
+          callback(ret);
+        }
+      });
+    },
+    getAllergies: function getAllergies(code, callback) {
+      var count = arguments.length <= 2 || arguments[2] === undefined ? 20 : arguments[2];
+
+      var ret = [];
+      _ember['default'].$.when(this.patientContext.api.search({
+        'type': "AllergyIntolerance",
+        // 'query': {
+        //   'code': code,
+        //   '_sort:desc':'date'},
+        'count': count })).done(function (allergies) {
+        console.log('allergies: ', allergies);
+        if (!_ember['default'].isNone(allergies.data.entry)) {
+          allergies.data.entry.forEach(function (allergy) {
+            var a = allergy.resource;
+            var r = {};
+            r.severity = a.reaction[0].severity;
+            r.manifestation = a.reaction[0].manifestation[0].text;
+            r.category = a.category;
+            r.date = a.recordedDate;
+            r.substance = a.substance.text;
+            r.text = a.text.div;
+            ret.push(r);
+          });
+        }
+        if (typeof callback === 'function') {
+          callback(ret);
+        }
+      });
     },
     loadPatient: function loadPatient(patient) {
       if (patient === 'demo') {
@@ -1164,6 +1268,19 @@ define('antimicrobial-cds/services/fhir-client', ['exports', 'ember', 'moment', 
             unit: 'mmHg'
           }
         });
+        this.set('patient.conditions', [{
+          code: '426656000',
+          text: 'Severe persistent asthma',
+          date: '2010/01/01'
+        }]);
+        this.set('patient.allergies', [{
+          severity: 'severe',
+          manifestation: 'anaphylaxis',
+          category: 'medication',
+          date: '2010/01/01',
+          substance: 'Penicillin',
+          text: 'Severe Penicillin Allergy'
+        }]);
         this.set('patient.hasPenicillinAllergy', true);
       }
     }
@@ -1684,6 +1801,113 @@ define("antimicrobial-cds/templates/application", ["exports"], function (exports
         return morphs;
       },
       statements: [["inline", "link-to", ["App Home", "index"], [], ["loc", [null, [15, 14], [15, 44]]]], ["inline", "link-to", ["Patient Summary", "patient"], [], ["loc", [null, [16, 14], [16, 53]]]], ["inline", "link-to", ["Medications", "medicationorders"], [], ["loc", [null, [17, 14], [17, 58]]]], ["inline", "link-to", ["Conditions", "conditions"], [], ["loc", [null, [18, 14], [18, 51]]]], ["inline", "link-to", ["About", "about"], [], ["loc", [null, [19, 25], [19, 52]]]], ["block", "if", [["get", "fc.isAuthenticated", ["loc", [null, [21, 14], [21, 32]]]]], [], 0, null, ["loc", [null, [21, 8], [29, 15]]]], ["content", "outlet", ["loc", [null, [33, 0], [33, 10]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
+define("antimicrobial-cds/templates/components/allergy-list", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 3,
+              "column": 0
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/components/allergy-list.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("div");
+          var el2 = dom.createElement("strong");
+          var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" (");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(") ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element0 = dom.childAt(fragment, [0]);
+          var morphs = new Array(4);
+          morphs[0] = dom.createAttrMorph(element0, 'class');
+          morphs[1] = dom.createMorphAt(dom.childAt(element0, [0]), 0, 0);
+          morphs[2] = dom.createMorphAt(element0, 2, 2);
+          morphs[3] = dom.createMorphAt(element0, 4, 4);
+          return morphs;
+        },
+        statements: [["attribute", "class", ["concat", ["row ", ["get", "highlight_color", ["loc", [null, [2, 18], [2, 33]]]]]]], ["content", "substance", ["loc", [null, [2, 45], [2, 58]]]], ["content", "category", ["loc", [null, [2, 69], [2, 81]]]], ["content", "severity", ["loc", [null, [2, 83], [2, 95]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 5,
+            "column": 0
+          }
+        },
+        "moduleName": "antimicrobial-cds/templates/components/allergy-list.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(2);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        return morphs;
+      },
+      statements: [["block", "if", [["get", "shouldShow", ["loc", [null, [1, 6], [1, 16]]]]], [], 0, null, ["loc", [null, [1, 0], [3, 7]]]], ["content", "yield", ["loc", [null, [4, 0], [4, 9]]]]],
       locals: [],
       templates: [child0]
     };
@@ -3164,6 +3388,108 @@ define("antimicrobial-cds/templates/components/aom-penicillin", ["exports"], fun
       statements: [["element", "action", ["step5", "amoxicillin"], ["on", "change"], ["loc", [null, [3, 99], [3, 143]]]], ["content", "type", ["loc", [null, [4, 21], [4, 29]]]], ["content", "dose", ["loc", [null, [4, 31], [4, 39]]]], ["content", "unit", ["loc", [null, [4, 39], [4, 47]]]], ["content", "duration_value", ["loc", [null, [4, 59], [4, 77]]]], ["content", "duration_unit", ["loc", [null, [4, 78], [4, 95]]]], ["element", "action", ["step5", "amoxicillin-clavulanate"], ["on", "change"], ["loc", [null, [9, 99], [9, 155]]]], ["content", "type", ["loc", [null, [11, 33], [11, 41]]]], ["content", "dose", ["loc", [null, [11, 43], [11, 51]]]], ["content", "unit", ["loc", [null, [11, 51], [11, 59]]]], ["content", "duration_value", ["loc", [null, [11, 71], [11, 89]]]], ["content", "duration_unit", ["loc", [null, [11, 90], [11, 107]]]], ["element", "action", ["step5"], ["on", "change"], ["loc", [null, [16, 99], [16, 130]]]], ["content", "yield", ["loc", [null, [21, 0], [21, 9]]]]],
       locals: [],
       templates: []
+    };
+  })());
+});
+define("antimicrobial-cds/templates/components/condition-list", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 3,
+              "column": 0
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/components/condition-list.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("div");
+          var el2 = dom.createElement("strong");
+          var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element0 = dom.childAt(fragment, [0]);
+          var morphs = new Array(3);
+          morphs[0] = dom.createAttrMorph(element0, 'class');
+          morphs[1] = dom.createMorphAt(dom.childAt(element0, [0]), 0, 0);
+          morphs[2] = dom.createMorphAt(element0, 2, 2);
+          return morphs;
+        },
+        statements: [["attribute", "class", ["concat", ["row ", ["get", "highlight_color", ["loc", [null, [2, 18], [2, 33]]]]]]], ["content", "text", ["loc", [null, [2, 45], [2, 53]]]], ["content", "date", ["loc", [null, [2, 63], [2, 71]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 5,
+            "column": 0
+          }
+        },
+        "moduleName": "antimicrobial-cds/templates/components/condition-list.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(2);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        return morphs;
+      },
+      statements: [["block", "if", [["get", "shouldShow", ["loc", [null, [1, 6], [1, 16]]]]], [], 0, null, ["loc", [null, [1, 0], [3, 7]]]], ["content", "yield", ["loc", [null, [4, 0], [4, 9]]]]],
+      locals: [],
+      templates: [child0]
     };
   })());
 });
@@ -5855,11 +6181,95 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 97,
+              "line": 53,
               "column": 8
             },
             "end": {
-              "line": 99,
+              "line": 55,
+              "column": 8
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/patient.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("        Total Conditions: ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["content", "fc.patient.conditions.length", ["loc", [null, [54, 26], [54, 58]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 55,
+              "column": 8
+            },
+            "end": {
+              "line": 57,
+              "column": 8
+            }
+          },
+          "moduleName": "antimicrobial-cds/templates/patient.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("p");
+          var el2 = dom.createTextNode("No Documented Conditions");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child2 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 72,
+              "column": 8
+            },
+            "end": {
+              "line": 74,
               "column": 8
             }
           },
@@ -5884,12 +6294,12 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["content", "fc.patient.medications.length", ["loc", [null, [98, 27], [98, 60]]]]],
+        statements: [["content", "fc.patient.medications.length", ["loc", [null, [73, 27], [73, 60]]]]],
         locals: [],
         templates: []
       };
     })();
-    var child1 = (function () {
+    var child3 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -5897,11 +6307,11 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 99,
+              "line": 74,
               "column": 8
             },
             "end": {
-              "line": 101,
+              "line": 76,
               "column": 8
             }
           },
@@ -5931,7 +6341,7 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         templates: []
       };
     })();
-    var child2 = (function () {
+    var child4 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -5939,12 +6349,12 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 141,
-              "column": 6
+              "line": 122,
+              "column": 8
             },
             "end": {
-              "line": 145,
-              "column": 6
+              "line": 124,
+              "column": 8
             }
           },
           "moduleName": "antimicrobial-cds/templates/patient.hbs"
@@ -5955,32 +6365,25 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("      ");
+          var el1 = dom.createTextNode("        Total Allergies: ");
           dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1, "class", "row bg-infolight-b");
-          var el2 = dom.createTextNode("\n        ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("strong");
-          var el3 = dom.createTextNode("Penicillin");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
+          var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
-        buildRenderNodes: function buildRenderNodes() {
-          return [];
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
         },
-        statements: [],
+        statements: [["content", "fc.patient.allergies.length", ["loc", [null, [123, 25], [123, 56]]]]],
         locals: [],
         templates: []
       };
     })();
-    var child3 = (function () {
+    var child5 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -5988,12 +6391,12 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 145,
-              "column": 6
+              "line": 124,
+              "column": 8
             },
             "end": {
-              "line": 149,
-              "column": 6
+              "line": 126,
+              "column": 8
             }
           },
           "moduleName": "antimicrobial-cds/templates/patient.hbs"
@@ -6004,11 +6407,10 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("      ");
+          var el1 = dom.createTextNode("        ");
           dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1, "class", "row info");
-          var el2 = dom.createTextNode("\n        No relevant allergies\n      ");
+          var el1 = dom.createElement("p");
+          var el2 = dom.createTextNode("No Allergy History");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -6037,7 +6439,7 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 155,
+            "line": 133,
             "column": 0
           }
         },
@@ -6292,129 +6694,41 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("Problem List");
+        var el5 = dom.createTextNode("Condition List");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
+        var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row bg-infolight-a");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("span");
-        dom.setAttribute(el5, "class", "patientspan");
-        var el6 = dom.createTextNode("Hypertensive disorder\n          ");
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6, "class", "problembutton pull-right hidden");
-        var el7 = dom.createTextNode("\n            ");
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("em");
-        var el8 = dom.createTextNode("i");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createTextNode("\n          ");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createTextNode("\n        ");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row bg-infolight-b");
-        var el5 = dom.createTextNode("\n        ");
+        dom.setAttribute(el4, "class", "row info");
+        var el5 = dom.createTextNode("\n");
         dom.appendChild(el4, el5);
-        var el5 = dom.createElement("span");
-        var el6 = dom.createTextNode("Transformed migraine\n          ");
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6, "class", "problembutton pull-right hidden");
-        var el7 = dom.createTextNode("\n            ");
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("em");
-        var el8 = dom.createTextNode("i");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createTextNode("\n          ");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createTextNode("\n        ");
-        dom.appendChild(el5, el6);
+        var el5 = dom.createComment("");
         dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
+        var el5 = dom.createTextNode("      ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row bg-infolight-a");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("span");
-        var el6 = dom.createTextNode("Hypercholesterolemia\n          ");
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6, "class", "problembutton pull-right hidden");
-        var el7 = dom.createTextNode("\n            ");
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("em");
-        var el8 = dom.createTextNode("i");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createTextNode("\n          ");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createTextNode("\n        ");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("p");
-        dom.setAttribute(el5, "class", "lead");
-        var el6 = dom.createTextNode("Non-Chronic");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4, "class", "row bg-infolight-b");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("span");
-        var el6 = dom.createTextNode("Bacterial pneumonia\n          ");
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6, "class", "problembutton pull-right hidden");
-        var el7 = dom.createTextNode("\n            ");
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("em");
-        var el8 = dom.createTextNode("i");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createTextNode("\n          ");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createTextNode("\n        ");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n    ");
+        var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n    ");
@@ -6607,11 +6921,38 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var el5 = dom.createTextNode("Allergies");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n");
+        var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("    ");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4, "class", "row info");
+        var el5 = dom.createTextNode("\n");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createComment("");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("      ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -6637,8 +6978,11 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         var element5 = dom.childAt(element2, [11]);
         var element6 = dom.childAt(element2, [15]);
         var element7 = dom.childAt(fragment, [2]);
-        var element8 = dom.childAt(element7, [1, 7]);
-        var morphs = new Array(25);
+        var element8 = dom.childAt(element7, [1]);
+        var element9 = dom.childAt(element8, [3]);
+        var element10 = dom.childAt(element8, [7]);
+        var element11 = dom.childAt(element7, [3, 7]);
+        var morphs = new Array(36);
         morphs[0] = dom.createMorphAt(dom.childAt(element1, [3]), 0, 0);
         morphs[1] = dom.createMorphAt(dom.childAt(element1, [7]), 0, 0);
         morphs[2] = dom.createMorphAt(dom.childAt(element1, [11]), 0, 0);
@@ -6655,20 +6999,31 @@ define("antimicrobial-cds/templates/patient", ["exports"], function (exports) {
         morphs[13] = dom.createMorphAt(element6, 0, 0);
         morphs[14] = dom.createMorphAt(element6, 2, 2);
         morphs[15] = dom.createMorphAt(dom.childAt(element6, [4]), 0, 0);
-        morphs[16] = dom.createMorphAt(element8, 3, 3);
-        morphs[17] = dom.createMorphAt(element8, 5, 5);
-        morphs[18] = dom.createMorphAt(element8, 7, 7);
-        morphs[19] = dom.createMorphAt(element8, 9, 9);
-        morphs[20] = dom.createMorphAt(element8, 11, 11);
-        morphs[21] = dom.createMorphAt(dom.childAt(element8, [13]), 1, 1);
-        morphs[22] = dom.createMorphAt(dom.childAt(element8, [15]), 3, 3);
-        morphs[23] = dom.createMorphAt(dom.childAt(element7, [3, 7]), 3, 3);
-        morphs[24] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[16] = dom.createMorphAt(element9, 3, 3);
+        morphs[17] = dom.createMorphAt(element9, 5, 5);
+        morphs[18] = dom.createMorphAt(element9, 7, 7);
+        morphs[19] = dom.createMorphAt(element9, 9, 9);
+        morphs[20] = dom.createMorphAt(element9, 11, 11);
+        morphs[21] = dom.createMorphAt(dom.childAt(element9, [13]), 1, 1);
+        morphs[22] = dom.createMorphAt(element10, 3, 3);
+        morphs[23] = dom.createMorphAt(element10, 5, 5);
+        morphs[24] = dom.createMorphAt(element10, 7, 7);
+        morphs[25] = dom.createMorphAt(element10, 9, 9);
+        morphs[26] = dom.createMorphAt(element10, 11, 11);
+        morphs[27] = dom.createMorphAt(dom.childAt(element10, [13]), 1, 1);
+        morphs[28] = dom.createMorphAt(dom.childAt(element10, [15]), 3, 3);
+        morphs[29] = dom.createMorphAt(element11, 3, 3);
+        morphs[30] = dom.createMorphAt(element11, 5, 5);
+        morphs[31] = dom.createMorphAt(element11, 7, 7);
+        morphs[32] = dom.createMorphAt(element11, 9, 9);
+        morphs[33] = dom.createMorphAt(element11, 11, 11);
+        morphs[34] = dom.createMorphAt(dom.childAt(element11, [13]), 1, 1);
+        morphs[35] = dom.createMorphAt(fragment, 4, 4, contextualElement);
         return morphs;
       },
-      statements: [["content", "fc.patient.formatted_name", ["loc", [null, [8, 12], [8, 41]]]], ["content", "fc.patient.birthDate", ["loc", [null, [11, 12], [11, 36]]]], ["content", "fc.patient.gender", ["loc", [null, [13, 12], [13, 33]]]], ["content", "fc.patient.formatted_address", ["loc", [null, [15, 12], [15, 44]]]], ["inline", "round", [["get", "fc.patient.weight.value", ["loc", [null, [22, 20], [22, 43]]]]], [], ["loc", [null, [22, 12], [22, 45]]]], ["content", "fc.patient.weight.unit", ["loc", [null, [22, 46], [22, 72]]]], ["content", "fc.patient.weight.date", ["loc", [null, [22, 99], [22, 125]]]], ["inline", "round", [["get", "fc.patient.temp.value", ["loc", [null, [24, 20], [24, 41]]]]], [], ["loc", [null, [24, 12], [24, 43]]]], ["content", "fc.patient.temp.unit", ["loc", [null, [24, 44], [24, 68]]]], ["content", "fc.patient.temp.date", ["loc", [null, [24, 95], [24, 119]]]], ["content", "fc.patient.bloodpressure.systolic.value", ["loc", [null, [26, 12], [26, 55]]]], ["content", "fc.patient.bloodpressure.systolic.unit", ["loc", [null, [26, 56], [26, 98]]]], ["content", "fc.patient.bloodpressure.systolic.date", ["loc", [null, [27, 36], [27, 78]]]], ["content", "fc.patient.bloodpressure.diastolic.value", ["loc", [null, [29, 12], [29, 56]]]], ["content", "fc.patient.bloodpressure.diastolic.unit", ["loc", [null, [29, 57], [29, 100]]]], ["content", "fc.patient.bloodpressure.diastolic.date", ["loc", [null, [30, 36], [30, 79]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [91, 29], [91, 51]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-b"], ["loc", [null, [91, 6], [91, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [92, 29], [92, 51]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-a"], ["loc", [null, [92, 6], [92, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [93, 29], [93, 51]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-b"], ["loc", [null, [93, 6], [93, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [94, 29], [94, 51]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-a"], ["loc", [null, [94, 6], [94, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [95, 29], [95, 51]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-b"], ["loc", [null, [95, 6], [95, 94]]]], ["block", "if", [["get", "fc.patient.medications", ["loc", [null, [97, 14], [97, 36]]]]], [], 0, 1, ["loc", [null, [97, 8], [101, 15]]]], ["inline", "link-to", ["Medications", "medicationorders"], ["class", "btn btn-default pull-right"], ["loc", [null, [105, 8], [105, 87]]]], ["block", "if", [["get", "fc.patient.hasPenicillinAllergy", ["loc", [null, [141, 12], [141, 43]]]]], [], 2, 3, ["loc", [null, [141, 6], [149, 13]]]], ["content", "outlet", ["loc", [null, [154, 0], [154, 10]]]]],
+      statements: [["content", "fc.patient.formatted_name", ["loc", [null, [8, 12], [8, 41]]]], ["content", "fc.patient.birthDate", ["loc", [null, [11, 12], [11, 36]]]], ["content", "fc.patient.gender", ["loc", [null, [13, 12], [13, 33]]]], ["content", "fc.patient.formatted_address", ["loc", [null, [15, 12], [15, 44]]]], ["inline", "round", [["get", "fc.patient.weight.value", ["loc", [null, [22, 20], [22, 43]]]]], [], ["loc", [null, [22, 12], [22, 45]]]], ["content", "fc.patient.weight.unit", ["loc", [null, [22, 46], [22, 72]]]], ["content", "fc.patient.weight.date", ["loc", [null, [22, 99], [22, 125]]]], ["inline", "round", [["get", "fc.patient.temp.value", ["loc", [null, [24, 20], [24, 41]]]]], [], ["loc", [null, [24, 12], [24, 43]]]], ["content", "fc.patient.temp.unit", ["loc", [null, [24, 44], [24, 68]]]], ["content", "fc.patient.temp.date", ["loc", [null, [24, 95], [24, 119]]]], ["content", "fc.patient.bloodpressure.systolic.value", ["loc", [null, [26, 12], [26, 55]]]], ["content", "fc.patient.bloodpressure.systolic.unit", ["loc", [null, [26, 56], [26, 98]]]], ["content", "fc.patient.bloodpressure.systolic.date", ["loc", [null, [27, 36], [27, 78]]]], ["content", "fc.patient.bloodpressure.diastolic.value", ["loc", [null, [29, 12], [29, 56]]]], ["content", "fc.patient.bloodpressure.diastolic.unit", ["loc", [null, [29, 57], [29, 100]]]], ["content", "fc.patient.bloodpressure.diastolic.date", ["loc", [null, [30, 36], [30, 79]]]], ["inline", "condition-list", [], ["conditions", ["subexpr", "@mut", [["get", "fc.patient.conditions", ["loc", [null, [47, 34], [47, 55]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-a"], ["loc", [null, [47, 6], [47, 98]]]], ["inline", "condition-list", [], ["conditions", ["subexpr", "@mut", [["get", "fc.patient.conditions", ["loc", [null, [48, 34], [48, 55]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-b"], ["loc", [null, [48, 6], [48, 98]]]], ["inline", "condition-list", [], ["conditions", ["subexpr", "@mut", [["get", "fc.patient.conditions", ["loc", [null, [49, 34], [49, 55]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-a"], ["loc", [null, [49, 6], [49, 98]]]], ["inline", "condition-list", [], ["conditions", ["subexpr", "@mut", [["get", "fc.patient.conditions", ["loc", [null, [50, 34], [50, 55]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-b"], ["loc", [null, [50, 6], [50, 98]]]], ["inline", "condition-list", [], ["conditions", ["subexpr", "@mut", [["get", "fc.patient.conditions", ["loc", [null, [51, 34], [51, 55]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-a"], ["loc", [null, [51, 6], [51, 98]]]], ["block", "if", [["get", "fc.patient.conditions", ["loc", [null, [53, 14], [53, 35]]]]], [], 0, 1, ["loc", [null, [53, 8], [57, 15]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [66, 29], [66, 51]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-b"], ["loc", [null, [66, 6], [66, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [67, 29], [67, 51]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-a"], ["loc", [null, [67, 6], [67, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [68, 29], [68, 51]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-b"], ["loc", [null, [68, 6], [68, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [69, 29], [69, 51]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-a"], ["loc", [null, [69, 6], [69, 94]]]], ["inline", "medication-list", [], ["meds", ["subexpr", "@mut", [["get", "fc.patient.medications", ["loc", [null, [70, 29], [70, 51]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-b"], ["loc", [null, [70, 6], [70, 94]]]], ["block", "if", [["get", "fc.patient.medications", ["loc", [null, [72, 14], [72, 36]]]]], [], 2, 3, ["loc", [null, [72, 8], [76, 15]]]], ["inline", "link-to", ["Medications", "medicationorders"], ["class", "btn btn-default pull-right"], ["loc", [null, [80, 8], [80, 87]]]], ["inline", "allergy-list", [], ["allergies", ["subexpr", "@mut", [["get", "fc.patient.allergies", ["loc", [null, [116, 31], [116, 51]]]]], [], []], "index", 0, "highlight_color", "bg-infolight-b"], ["loc", [null, [116, 6], [116, 94]]]], ["inline", "allergy-list", [], ["allergies", ["subexpr", "@mut", [["get", "fc.patient.allergies", ["loc", [null, [117, 31], [117, 51]]]]], [], []], "index", 1, "highlight_color", "bg-infolight-a"], ["loc", [null, [117, 6], [117, 94]]]], ["inline", "allergy-list", [], ["allergies", ["subexpr", "@mut", [["get", "fc.patient.allergies", ["loc", [null, [118, 31], [118, 51]]]]], [], []], "index", 2, "highlight_color", "bg-infolight-b"], ["loc", [null, [118, 6], [118, 94]]]], ["inline", "allergy-list", [], ["allergies", ["subexpr", "@mut", [["get", "fc.patient.allergies", ["loc", [null, [119, 31], [119, 51]]]]], [], []], "index", 3, "highlight_color", "bg-infolight-a"], ["loc", [null, [119, 6], [119, 94]]]], ["inline", "allergy-list", [], ["allergies", ["subexpr", "@mut", [["get", "fc.patient.allergies", ["loc", [null, [120, 31], [120, 51]]]]], [], []], "index", 4, "highlight_color", "bg-infolight-b"], ["loc", [null, [120, 6], [120, 94]]]], ["block", "if", [["get", "fc.patient.allergies", ["loc", [null, [122, 14], [122, 34]]]]], [], 4, 5, ["loc", [null, [122, 8], [126, 15]]]], ["content", "outlet", ["loc", [null, [132, 0], [132, 10]]]]],
       locals: [],
-      templates: [child0, child1, child2, child3]
+      templates: [child0, child1, child2, child3, child4, child5]
     };
   })());
 });
@@ -6698,7 +7053,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+0e072679"});
+  require("antimicrobial-cds/app")["default"].create({"date_format":"YYYY/MM/DD","aom_cds":["3110003","65363002"],"strep_cds":["43878008","1532007"],"lab_exclusions":["55284-4","8480-6","8462-4","3141-9","8310-5"],"aom_temp_threshold":39,"strep_temp_threshold":38,"name":"antimicrobial-cds","version":"0.0.0+77e48fdb"});
 }
 
 /* jshint ignore:end */
